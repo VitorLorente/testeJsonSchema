@@ -1,5 +1,8 @@
 # vscode configs
-vscode/
+.vscode/
+
+# enviroment variables
+.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
