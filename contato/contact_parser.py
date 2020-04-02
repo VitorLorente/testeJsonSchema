@@ -102,6 +102,12 @@ class ContactParser(object):
 
     def bulk_create_contacts(self):
         
+        """
+        Cria um csv temporário com .DictWriter a partir dos dicionários em
+        self.parsed_contacts. O csv é utilizado do salvamento no banco de dados,
+        com .from_csv() da lib django-postgres-copy.
+
+        """
         with tempfile.NamedTemporaryFile(
             suffix='.csv',
             prefix=('contact'),

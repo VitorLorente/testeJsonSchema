@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
@@ -75,7 +77,7 @@ class Contact(models.Model):
     objects = CopyManager()
 
     def __str__(self):
-        return self.infos.first_name + " " + self.infos.last_name
+        return self.infos['first_name']['value']
 
     @property
     def infos(self):
