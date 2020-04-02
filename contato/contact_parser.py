@@ -1,14 +1,17 @@
+import csv
+from datetime import date
 import json
+import tempfile
 
 from contato.models import Contact, ContactFields
 
 
 class ContactParser(object):
     
-    def __init__(self, file_path, layout):
+    def __init__(self, file_path, contact_fields_pk):
 
         self.file_path = file_path
-        self.contact_fields = ContactFields.objects.get(pk=layout)
+        self.contact_fields = ContactFields.objects.get(pk=contact_fields_pk)
         self.layout = self.contact_fields.fields
         self.file_lines = list()
         self.parsed_contacts = dict()
@@ -74,43 +77,49 @@ class ContactParser(object):
         self.parsed_contacts = [
             
             {
-                'fields_type': contact_fields_pk
-                'contact_infos':json.dumps({
+                'fields_type': contact_fields_pk,
+                'upload_date': date.today(),
+                'contact_infos':json.dumps(
+                    {
 
-                    key: {
-                        
-                        'verbose_name': self.layout[key]['verbose_name'],
-                        'value': line[
-                            self.layout[key]['slice_tuple'][0]:self.layout[key]['slice_tuple'][1]
-                        ]
+                        key: {
+                            
+                            'verbose_name': self.layout[key]['verbose_name'],
+                            'value': line[
+                                self.layout[key]['slice_tuple'][0]:self.layout[key]['slice_tuple'][1]
+                            ].rstrip()
 
+                        }
+                        for key in keys_to_parse
                     }
-                })
 
-                for key in keys_to_parse
+                )
             }
 
             for line in self.file_lines
         ]
 
 
-        def bulk_create_contacts(self):
+    def bulk_create_contacts(self):
+        
+        with tempfile.NamedTemporaryFile(
+            suffix='.csv',
+            prefix=('contact'),
+            delete=True,
+            mode='w+'
+        ) as csv_file:
+            filewriter = csv.writer(csv_file, delimiter=',')
+            csv_headers = ['fields_type', 'contact_infos', 'upload_date']
+            csv_writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+
+            csv_writer.writeheader()
             
-            with tempfile.NamedTemporaryFile(
-                suffix='.csv',
-                prefix=('contact'),
-                delete=True,
-                mode='w+'
-            ) as csv_file:
-                filewriter = csv.writer(csv_file, delimiter=',')
-                csv_headers = ['fields_type', 'contact_infos']
-                csv_writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+            for contact in self.parsed_contacts:
+                print(contact)
+                csv_writer.writerow(contact)
 
-                csv_writer.writeheader()
-                
-                for contact in self.parsed_contacts:
-                    csv_writer.writerow(contact)
+            print(csv_file.read())
 
-                Contact.objects.from_csv(
-                    csv_file.name
-                )
+            Contact.objects.from_csv(
+                csv_file.name
+            )

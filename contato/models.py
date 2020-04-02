@@ -21,9 +21,6 @@ class ContactFields(models.Model):
     fields = JSONField()
 
 
-    objects = CopyManager()
-
-
     def __str__(self):
         return self.name
 
@@ -69,11 +66,13 @@ class Contact(models.Model):
 
     upload_date = models.DateField(
         verbose_name='Data de upload',
-        auto_now=True
+        auto_now_add=True
     )
 
     contact_infos = JSONField()
 
+
+    objects = CopyManager()
 
     def __str__(self):
         return self.infos.first_name + " " + self.infos.last_name
