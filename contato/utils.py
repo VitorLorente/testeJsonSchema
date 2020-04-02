@@ -5,7 +5,7 @@ def validate_fields(contact):
 
     Verifica também se um dos campos está vaio.
     
-    TODO: No json de ContactFields deverá constar a informação da obrigatoriedade
+    TODO: [SÓ FALTA TESTAR] No json de ContactFields deverá constar a informação da obrigatoriedade
     do campo.
     
     """
