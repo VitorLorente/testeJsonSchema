@@ -42,6 +42,9 @@ class ContactFields(models.Model):
 
         return True
 
+    def get_fields(self):
+        return global_utils.dotdict(self.fields)
+
 
 class Contact(models.Model):
     
