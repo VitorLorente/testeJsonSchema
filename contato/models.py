@@ -43,10 +43,6 @@ class ContactFields(models.Model):
         return True
 
 
-            
-
-
-
 class Contact(models.Model):
     
     fields_type = models.ForeignKey(
