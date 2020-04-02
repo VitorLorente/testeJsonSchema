@@ -7,8 +7,7 @@ from testeJsonSchema import utils as global_utils
 class ContactFields(models.Model):
     SUBFIELD_VALIDATE = {
         'requirement': bool,
-        'verbose_name': str,
-        'value': str
+        'verbose_name': str
     }
 
     name = models.CharField(
@@ -23,29 +22,25 @@ class ContactFields(models.Model):
         return self.name
 
     def self_validate(self):
-        status = True
-
         for key in self.fields.items():
-
-            requirement = key[1]['requirement']
-            verbose_name = key[1]['verbose_name']
-            value = key[1]['value']
-
-            # Confere se as chaves estão ok
-            if set(key[1].keys()) ^ set(SUBFIELD_VALIDATE.keys()) > 0:
-                status = False
-
-            # Confere se o valor de cada chave tem o tipo certo
-            if not (type(requirement) == SUBFIELD_VALIDATE['requirement'] and
-                type(verbose_name) == SUBFIELD_VALIDATE['verbose_name'] and
-                type(value) == SUBFIELD_VALIDATE['value']):
-                status = False
+            requirement = key[1].get('requirement', None)
+            verbose_name = key[1].get('verbose_name', None)
 
             # Confere se cada informação está preenchida
-            if not (requirement and verbose_name and value):
-                status = False
+            if not (requirement is not None and verbose_name is not None):
+                return False
 
-            return status
+            # Confere se as chaves estão ok
+            if len(set(key[1].keys()) ^ set(self.SUBFIELD_VALIDATE.keys())) > 0:
+                return False
+
+            # Confere se o valor de cada chave tem o tipo certo
+            if not (type(requirement) == self.SUBFIELD_VALIDATE['requirement'] and
+                type(verbose_name) == self.SUBFIELD_VALIDATE['verbose_name']):
+                    return False
+
+
+        return True
 
 
             
