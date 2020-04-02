@@ -14,6 +14,23 @@ class ContactParser(object):
         self.parsed_contacts = dict()
 
     
+    def go(self):
+        
+        """
+        Método de gatilho para o parser. É o que será utilizado na task
+        do celery.
+        Atividades realizadas:
+            - separa o arquivo em linhas (lista de strings);
+            - parseia o arquivo separando em uma linha de dicionários utilizados
+              para gerar o csv usado no .from_csv();
+            - Gera um arquivo csv e salva no postgres com .from_csv().
+        
+        """
+        self.get_file_lines()
+        self.parser()
+        self.bulk_create_contacts()
+
+
     def get_file_lines(self):
         
         """
