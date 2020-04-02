@@ -24,39 +24,45 @@ class ContactParser(object):
     def parser(self):
         
         """
-        Parseia cada linha (cada contato) do arquivo, gerando um dicionário
-        baseado no modelo do contato a ser salvo como jsonfield.
+        Parseia cada linha (cada contato) do arquivo, gerando uma lista
+        de dicionários baseados no modelo do contato a ser salvo como
+        jsonfield.
         
-        result_json = {
-            'field_1': {
-                verbose_name: 'Field One',
-                value: 'Value from parsed file'
-            },
-            'field_2': {
-                verbose_name: 'Field Two',
-                value: 'Value from parsed file'
-            },
-
+        self.parsed_contacts = [
+            {
+                'field_1': {
+                    verbose_name: 'Field One',
+                    value: 'Value from parsed file'
+                },
+                'field_2': {
+                    verbose_name: 'Field Two',
+                    value: 'Value from parsed file'
+                },
+                ...
+            }
             ...
-        }
+        ]
 
         """
         keys_to_parse = self.layout.keys()
 
-        self.parsed_contacts = {
+        self.parsed_contacts = [
             
-            key: {
-                
-                'verbose_name': self.layout['verbose_name'],
-                'value': line[
-                    self.layout['slice'][0]:self.layout['slice'][1]
-                ]
+            {
+                key: {
+                    
+                    'verbose_name': self.layout[key]['verbose_name'],
+                    'value': line[
+                        self.layout[key]['slice'][0]:self.layout[key]['slice'][1]
+                    ]
 
-                for line in self.file_lines
+                }
+
+                for key in keys_to_parse
             }
 
-            for key in keys_to_parse
-        }
+            for line in self.file_lines
+        ]
 
 
         def bulk_create_contacts(self):
@@ -66,5 +72,4 @@ class ContactParser(object):
             da lib django-postgres-copy.
             
             """
-            
             pass
