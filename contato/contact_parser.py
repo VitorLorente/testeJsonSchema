@@ -59,7 +59,7 @@ class ContactParser(object):
         }
 
 
-        def bulk_createcontacts(self):
+        def bulk_create_contacts(self):
             """
             Método responsável por salvar em lote os contatos. Por performance,
             utilizamos o método COPY do postgres, através do comando .from_csv(),
