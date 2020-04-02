@@ -1,13 +1,16 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+from postgres_copy import CopyManager
+
 from testeJsonSchema import utils as global_utils
 
 
 class ContactFields(models.Model):
     SUBFIELD_VALIDATE = {
         'requirement': bool,
-        'verbose_name': str
+        'verbose_name': str,
+        'slice_tuple': (int, int)
     }
 
     name = models.CharField(
@@ -18,6 +21,9 @@ class ContactFields(models.Model):
     fields = JSONField()
 
 
+    objects = CopyManager()
+
+
     def __str__(self):
         return self.name
 
@@ -26,9 +32,16 @@ class ContactFields(models.Model):
         for key in self.fields.items():
             requirement = key[1].get('requirement', None)
             verbose_name = key[1].get('verbose_name', None)
+            slice_tuple = key[1].get('slice_tuple', None)
+
+            # Se houver a tupla exigida, colhe o tipo de parametro dos elementos 
+            if slice_tuple:
+                slice_params = slice_tuple[0]
+            else:
+                return False
 
             # Confere se cada informação está preenchida
-            if not (requirement is not None and verbose_name is not None):
+            if not (requirement is not None and verbose_name is not None and slice_params is not None):
                 return False
 
             # Confere se as chaves estão ok
@@ -37,7 +50,8 @@ class ContactFields(models.Model):
 
             # Confere se o valor de cada chave tem o tipo certo
             if not (type(requirement) == self.SUBFIELD_VALIDATE['requirement'] and
-                type(verbose_name) == self.SUBFIELD_VALIDATE['verbose_name']):
+                type(verbose_name) == self.SUBFIELD_VALIDATE['verbose_name'] and
+                type(slice_params) == type(self.SUBFIELD_VALIDATE['slice_params'])):
                     return False
 
         return True
