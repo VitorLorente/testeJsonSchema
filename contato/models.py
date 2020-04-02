@@ -22,6 +22,7 @@ class ContactFields(models.Model):
         return self.name
 
     def self_validate(self):
+
         for key in self.fields.items():
             requirement = key[1].get('requirement', None)
             verbose_name = key[1].get('verbose_name', None)
@@ -38,7 +39,6 @@ class ContactFields(models.Model):
             if not (type(requirement) == self.SUBFIELD_VALIDATE['requirement'] and
                 type(verbose_name) == self.SUBFIELD_VALIDATE['verbose_name']):
                     return False
-
 
         return True
 
