@@ -77,8 +77,8 @@ class Contact(models.Model):
 
     objects = CopyManager()
 
-    def __str__(self):
-        return self.infos['first_name']['value']
+    # def __str__(self):
+    #     return self.infos['first_name']['value']
 
     @property
     def infos(self):

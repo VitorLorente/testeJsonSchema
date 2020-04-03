@@ -123,6 +123,8 @@ class ContactParser(object):
             for contact in self.parsed_contacts:
                 csv_writer.writerow(contact)
 
+            csv_file.read()
+
             Contact.objects.from_csv(
                 csv_file.name
             )
