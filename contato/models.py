@@ -12,7 +12,7 @@ class ContactFields(models.Model):
     SUBFIELD_VALIDATE = {
         'requirement': bool,
         'verbose_name': str,
-        'slice_tuple': (int, int)
+        'slice_tuple': [int, int]
     }
 
     name = models.CharField(
