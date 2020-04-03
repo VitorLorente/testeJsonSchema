@@ -61,7 +61,11 @@ class ContactFields(models.Model):
 
 
 class Contact(models.Model):
-    
+    SUBFIELD_VALIDATE = {
+        'verbose_name': str,
+        'value': str
+    }
+
     fields_type = models.ForeignKey(
         ContactFields,
         on_delete=models.CASCADE,
