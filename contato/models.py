@@ -50,7 +50,8 @@ class ContactFields(models.Model):
             # Confere se o valor de cada chave tem o tipo certo
             if not (type(requirement) == self.SUBFIELD_VALIDATE['requirement'] and
                 type(verbose_name) == self.SUBFIELD_VALIDATE['verbose_name'] and
-                type(slice_params) == type(self.SUBFIELD_VALIDATE['slice_params'])):
+                type(slice_tuple) == type(self.SUBFIELD_VALIDATE['slice_tuple']) and
+                type(slice_params) == self.SUBFIELD_VALIDATE['slice_tuple'][0]):
                     return False
 
         return True

@@ -121,10 +121,7 @@ class ContactParser(object):
             csv_writer.writeheader()
             
             for contact in self.parsed_contacts:
-                print(contact)
                 csv_writer.writerow(contact)
-
-            print(csv_file.read())
 
             Contact.objects.from_csv(
                 csv_file.name
