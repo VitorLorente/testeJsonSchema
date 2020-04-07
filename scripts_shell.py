@@ -9,14 +9,14 @@ c = ContactParser(os.getcwd()+'/contacts_modelo1.txt', 2)
 c.go()
 
 from contato.contact_parser import ContactParser
-from contato.models import ContactFields
+from contato.models import ContactFields, Contact
 import os
 path = os.getcwd() + '/contacts_modelo1.txt'
 pk_modelo = ContactFields.objects.first().pk
 parser = ContactParser(path, pk_modelo)
 parser.go()
 
-from contato.models import Contact
+from contato.models import Contact, ContactFields
 from contato.utils import validate_fields
 c = Contact.objects.first()
-validate_fields(c)
+validate_fields(c.contact_infos, c.fields_type)

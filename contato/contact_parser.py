@@ -4,6 +4,7 @@ import json
 import tempfile
 
 from contato.models import Contact, ContactFields
+from contato.utils import validate_fields
 
 
 class ContactParser(object):
@@ -106,8 +107,12 @@ class ContactParser(object):
 
 
     def clean(self):
-        pass
-    
+        self.parsed_contacts = [
+            instance for instance in self.parsed_contacts
+            if validate_fields(instance, self.contact_fields)
+        ]
+
+
 
     def bulk_create_contacts(self):
         
