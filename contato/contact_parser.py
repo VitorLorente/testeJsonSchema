@@ -29,9 +29,14 @@ class ContactParser(object):
             - Gera um arquivo csv e salva no postgres com .from_csv().
         
         """
+        import time
+        start = time.time()
         self.get_file_lines()
         self.parser()
+        self.clean()
         self.bulk_create_contacts()
+        end = time.time()
+        print(end-start)
 
 
     def get_file_lines(self):
@@ -99,6 +104,10 @@ class ContactParser(object):
             for line in self.file_lines
         ]
 
+
+    def clean(self):
+        pass
+    
 
     def bulk_create_contacts(self):
         
