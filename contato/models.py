@@ -62,8 +62,8 @@ class ContactFields(models.Model):
 
 class Contact(models.Model):
     SUBFIELD_VALIDATE = {
-        'verbose_name': str,
-        'value': str
+        'verbose_name': "str",
+        'value': "str"
     }
 
     fields_type = models.ForeignKey(

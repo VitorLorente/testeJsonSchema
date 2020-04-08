@@ -25,3 +25,8 @@ from contato.models import ContactFields
 from contato.validations import generate_subfields_schema
 c = ContactFields.objects.first()
 generate_subfields_schema(c)
+
+from contato.models import Contact
+from contato.validations import validate_fields
+c = Contact.objects.first()
+validate_fields(c.contact_infos, c.fields_type)
