@@ -4,7 +4,8 @@ import json
 import tempfile
 
 from contato.models import Contact, ContactFields
-from contato.utils import validate_fields
+# from contato.utils import validate_fields
+from contato.validations import generate_fields_schema, validate_fields
 
 
 class ContactParser(object):
@@ -15,6 +16,7 @@ class ContactParser(object):
         self.contact_fields = ContactFields.objects.get(pk=contact_fields_pk)
         self.layout = self.contact_fields.fields
         self.file_lines = list()
+        self.schema = None
         self.parsed_contacts = dict()
 
     
@@ -30,11 +32,15 @@ class ContactParser(object):
             - Gera um arquivo csv e salva no postgres com .from_csv().
         
         """
+        import time
         self.get_file_lines()
+        start = time.time()
+        self.get_validate_schema()
+        end = time.time()
         self.parser()
         self.clean()
+        print(end-start)
         self.bulk_create_contacts()
-
 
     def get_file_lines(self):
         
@@ -45,6 +51,17 @@ class ContactParser(object):
         with open(self.file_path, 'r') as contact_file:
             self.file_lines = [line for line in contact_file]
             contact_file.close()
+
+
+    def get_validate_schema(self):
+
+        """
+        Constrói um schema validador do jsonfield 'contacts_info' (de Contact), baseado no
+        jsonfield 'fields' (de ContactFields), populando self.schema para ser usado no
+        método clean().
+
+        """
+        self.schema = generate_fields_schema(self.contact_fields)
 
 
     def parser(self):
@@ -81,21 +98,18 @@ class ContactParser(object):
             {
                 'fields_type': contact_fields_pk,
                 'upload_date': date.today(),
-                'contact_infos':json.dumps(
-                    {
+                'contact_infos': {
+                    key: {
+                        
+                        'verbose_name': self.layout[key]['verbose_name'],
+                        'value': line[
+                            self.layout[key]['slice_tuple'][0]:self.layout[key]['slice_tuple'][1]
+                        ].rstrip()
 
-                        key: {
-                            
-                            'verbose_name': self.layout[key]['verbose_name'],
-                            'value': line[
-                                self.layout[key]['slice_tuple'][0]:self.layout[key]['slice_tuple'][1]
-                            ].rstrip()
-
-                        }
-                        for key in keys_to_parse
                     }
+                    for key in keys_to_parse
+                }
 
-                )
             }
 
             for line in self.file_lines
@@ -103,10 +117,18 @@ class ContactParser(object):
 
 
     def clean(self):
+        
+        """
+        
+
+        """
+
         self.parsed_contacts = [
             instance for instance in self.parsed_contacts
-            if validate_fields(instance, self.contact_fields)
+            if validate_fields(instance['contact_infos'], self.schema)
         ]
+        for instance in self.parsed_contacts:
+            instance['contact_infos'] = json.dumps(instance['contact_infos'])
 
 
 
